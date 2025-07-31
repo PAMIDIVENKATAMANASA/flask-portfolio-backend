@@ -30,15 +30,15 @@ A complete, dynamic, and modular Python Flask backend project with the following
 
 ### 1. Install Python Dependencies
 
-\`\`\`bash
+
 pip install -r requirements.txt
-\`\`\`
+
 
 ### 2. Run the Flask Server
 
-\`\`\`bash
+
 python app.py
-\`\`\`
+
 
 The server will start on `http://localhost:5000`
 
