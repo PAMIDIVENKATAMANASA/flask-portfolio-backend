@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Backend API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .api-section {
+            margin-bottom: 50px;
+            padding: 30px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .api-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            border-left: 5px solid #27ae60;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .result.error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        
+        .result h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .result pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .file-input-display {
+            display: block;
+            padding: 12px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            text-align: center;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-display:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-success { background: #27ae60; }
+        .status-error { background: #e74c3c; }
+        .status-loading { background: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Flask Backend API Tester</h1>
+            <p>Test all the dynamic features of your Flask backend</p>
+        </div>
+        
+        <div class="content">
+            <!-- Resume Parser Section -->
+            <div class="api-section">
+                <h2>📄 Resume Parser</h2>
+                <p>Upload a PDF or DOC/DOCX resume file to extract structured portfolio data.</p>
+                
+                <div class="form-group">
+                    <label for="resumeFile">Select Resume File (PDF/DOC/DOCX):</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx">
+                        <div class="file-input-display" onclick="document.getElementById('resumeFile').click()">
+                            <span id="fileDisplay">Click to select a resume file</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="parseResume()" id="parseBtn">
+                    <span class="status-indicator status-success"></span>
+                    Parse Resume
+                </button>
+                
+                <div id="resumeResult"></div>
+            </div>
+            
+            <!-- Translation Section -->
+            <div class="api-section">
+                <h2>🌍 Multi-Language Translator</h2>
+                <p>Translate any website content to different languages dynamically.</p>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="sourceText">Content to Translate:</label>
+                        <textarea id="sourceText" placeholder="Enter website content, product descriptions, or any text...">Welcome to our amazing website! We offer the best products and services. Our team is dedicated to providing excellent customer support and innovative solutions for all your needs.</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="targetLang">Target Language:</label>
+                        <select id="targetLang">
+                            <option value="es">Spanish (Español)</option>
+                            <option value="fr">French (Français)</option>
+                            <option value="de">German (Deutsch)</option>
+                            <option value="it">Italian (Italiano)</option>
+                            <option value="pt">Portuguese (Português)</option>
+                            <option value="ru">Russian (Русский)</option>
+                            <option value="ja">Japanese (日本語)</option>
+                            <option value="ko">Korean (한국어)</option>
+                            <option value="zh">Chinese (中文)</option>
+                            <option value="ar">Arabic (العربية)</option>
+                            <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="tr">Turkish (Türkçe)</option>
+                            <option value="pl">Polish (Polski)</option>
+                            <option value="nl">Dutch (Nederlands)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="translateText()" id="translateBtn">
+                    <span class="status-indicator status-success"></span>
+                    Translate Content
+                </button>
+                
+                <div id="translationResult"></div>
+            </div>
+            
+            <!-- Currency Converter Section -->
+            <div class="api-section">
+                <h2>💰 Multi-Currency Pricing</h2>
+                <p>Convert product prices to local currencies based on user's country.</p>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="productPrice">Product Price:</label>
+                        <input type="number" id="productPrice" value="99.99" step="0.01" placeholder="Enter price in base currency">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="baseCurrency">Base Currency:</label>
+                        <select id="baseCurrency">
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userCountry">User's Country:</label>
+                        <select id="userCountry">
+                            <option value="US">United States (USD)</option>
+                            <option value="GB">United Kingdom (GBP)</option>
+                            <option value="DE">Germany (EUR)</option>
+                            <option value="FR">France (EUR)</option>
+                            <option value="JP">Japan (JPY)</option>
+                            <option value="CN">China (CNY)</option>
+                            <option value="IN">India (INR)</option>
+                            <option value="CA">Canada (CAD)</option>
+                            <option value="AU">Australia (AUD)</option>
+                            <option value="BR">Brazil (BRL)</option>
+                            <option value="MX">Mexico (MXN)</option>
+                            <option value="RU">Russia (RUB)</option>
+                            <option value="KR">South Korea (KRW)</option>
+                            <option value="SG">Singapore (SGD)</option>
+                            <option value="CH">Switzerland (CHF)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="convertCurrency()" id="currencyBtn">
+                    <span class="status-indicator status-success"></span>
+                    Convert Price
+                </button>
+                
+                <div id="currencyResult"></div>
+            </div>
+        
+            <!-- AI Agent - Facebook Growth Section -->
+            <div class="api-section">
+                <h2>🤖 AI Agent - Facebook Growth</h2>
+                <p>Analyze your business and generate AI-powered social media content strategy.</p>
+                
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="businessUrl">Website URL:</label>
+                        <input type="url" id="businessUrl" placeholder="https://yourwebsite.com" value="https://example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="businessIndustry">Industry (Optional):</label>
+                        <select id="businessIndustry">
+                            <option value="">Auto-detect</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="retail">Retail</option>
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="education">Education</option>
+                            <option value="fitness">Fitness</option>
+                            <option value="beauty">Beauty</option>
+                            <option value="automotive">Automotive</option>
+                            <option value="real_estate">Real Estate</option>
+                            <option value="finance">Finance</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contentTone">Content Tone:</label>
+                        <select id="contentTone">
+                            <option value="friendly">Friendly</option>
+                            <option value="professional">Professional</option>
+                            <option value="witty">Witty</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="analyzeBusiness()" id="analyzeBtn">
+                    <span class="status-indicator status-success"></span>
+                    Analyze Business & Generate Content
+                </button>
+                
+                <div id="businessResult"></div>
+                
+                <!-- Content Planner Section -->
+                <div id="contentPlannerSection" style="display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e9ecef;">
+                    <h3>📅 Content Planner</h3>
+                    
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="postFrequency">Posting Frequency:</label>
+                            <select id="postFrequency">
+                                <option value="1x/week">1x per week</option>
+                                <option value="2x/week" selected>2x per week</option>
+                                <option value="3x/week">3x per week</option>
+                                <option value="4x/week">4x per week</option>
+                                <option value="5x/week">5x per week</option>
+                                <option value="daily">Daily</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Content Mix:</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <label style="margin: 0;">Educational: <input type="number" id="eduMix" value="40" min="0" max="100" style="width: 60px; margin: 0 5px;">%</label>
+                                <label style="margin: 0;">Promotional: <input type="number" id="promoMix" value="30" min="0" max="100" style="width: 60px; margin: 0 5px;">%</label>
+                                <label style="margin: 0;">News: <input type="number" id="newsMix" value="30" min="0" max="100" style="width: 60px; margin: 0 5px;">%</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="createContentCalendar()" id="plannerBtn">
+                        <span class="status-indicator status-success"></span>
+                        Create Content Calendar
+                    </button>
+                    
+                    <div id="calendarResult"></div>
+                </div>
+                
+                <!-- Post Preview & Edit Section -->
+                <div id="postPreviewSection" style="display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e9ecef;">
+                    <h3>📝 Post Preview & Edit</h3>
+                    
+                    <div class="form-group">
+                        <label for="previewPostId">Post ID to Preview:</label>
+                        <input type="text" id="previewPostId" placeholder="Enter post ID from calendar">
+                    </div>
+                    
+                    <button onclick="previewPost()" id="previewBtn">
+                        <span class="status-indicator status-success"></span>
+                        Preview Post
+                    </button>
+                    
+                    <div id="previewResult"></div>
+                    
+                    <!-- Edit Form -->
+                    <div id="editForm" style="display: none; margin-top: 20px;">
+                        <h4>Edit Post</h4>
+                        <div class="form-group">
+                            <label for="editContent">Post Content:</label>
+                            <textarea id="editContent" rows="4"></textarea>
+                        </div>
+                        
+                        <div class="grid">
+                            <div class="form-group">
+                                <label for="editDate">Date:</label>
+                                <input type="date" id="editDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="editTime">Time:</label>
+                                <input type="time" id="editTime">
+                            </div>
+                        </div>
+                        
+                        <button onclick="savePostEdit()" id="saveEditBtn">Save Changes</button>
+                        <button onclick="publishPost()" id="publishBtn">Publish Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // File input display update
+        document.getElementById('resumeFile').addEventListener('change', function(e) {
+            const fileDisplay = document.getElementById('fileDisplay');
+            if (e.target.files.length > 0) {
+                fileDisplay.textContent = e.target.files[0].name;
+            } else {
+                fileDisplay.textContent = 'Click to select a resume file';
+            }
+        });
+        
+        // Resume Parser Function
+        async function parseResume() {
+            const fileInput = document.getElementById('resumeFile');
+            const resultDiv = document.getElementById('resumeResult');
+            const btn = document.getElementById('parseBtn');
+            
+            if (!fileInput.files[0]) {
+                showResult(resultDiv, 'Please select a resume file first.', true);
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('resume', fileInput.files[0]);
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Parsing Resume...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/parse-resume`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(resultDiv, 'Resume Parsed Successfully!', false, data.data);
+                } else {
+                    showResult(resultDiv, data.error || 'Failed to parse resume', true);
+                }
+            } catch (error) {
+                showResult(resultDiv, `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="status-indicator status-success"></span>Parse Resume';
+            }
+        }
+        
+        // Translation Function
+        async function translateText() {
+            const sourceText = document.getElementById('sourceText').value;
+            const targetLang = document.getElementById('targetLang').value;
+            const resultDiv = document.getElementById('translationResult');
+            const btn = document.getElementById('translateBtn');
+            
+            if (!sourceText.trim()) {
+                showResult(resultDiv, 'Please enter text to translate.', true);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Translating...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: sourceText,
+                        target_language: targetLang,
+                        source_language: 'auto'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(resultDiv, 'Translation Completed!', false, data);
+                } else {
+                    showResult(resultDiv, data.error || 'Translation failed', true);
+                }
+            } catch (error) {
+                showResult(resultDiv, `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="status-indicator status-success"></span>Translate Content';
+            }
+        }
+        
+        // Currency Conversion Function
+        async function convertCurrency() {
+            const price = document.getElementById('productPrice').value;
+            const baseCurrency = document.getElementById('baseCurrency').value;
+            const country = document.getElementById('userCountry').value;
+            const resultDiv = document.getElementById('currencyResult');
+            const btn = document.getElementById('currencyBtn');
+            
+            if (!price || price <= 0) {
+                showResult(resultDiv, 'Please enter a valid price.', true);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Converting...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/convert-currency?price=${price}&country=${country}&base_currency=${baseCurrency}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(resultDiv, 'Currency Conversion Completed!', false, data);
+                } else {
+                    showResult(resultDiv, data.error || 'Currency conversion failed', true);
+                }
+            } catch (error) {
+                showResult(resultDiv, `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="status-indicator status-success"></span>Convert Price';
+            }
+        }
+        
+        // Helper function to display results
+        function showResult(container, message, isError = false, data = null) {
+            const resultClass = isError ? 'result error' : 'result';
+            const statusIcon = isError ? 'status-error' : 'status-success';
+            
+            let content = `
+                <div class="${resultClass}">
+                    <h3><span class="status-indicator ${statusIcon}"></span>${message}</h3>
+            `;
+            
+            if (data) {
+                content += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            
+            content += '</div>';
+            container.innerHTML = content;
+        }
+        
+        // Load supported languages and countries on page load
+        window.addEventListener('load', async function() {
+            try {
+                // Load supported languages
+                const langResponse = await fetch(`${API_BASE}/supported-languages`);
+                const langData = await langResponse.json();
+                
+                if (langData.success) {
+                    const select = document.getElementById('targetLang');
+                    select.innerHTML = '';
+                    
+                    Object.entries(langData.languages).forEach(([code, name]) => {
+                        const option = document.createElement('option');
+                        option.value = code;
+                        option.textContent = name;
+                        select.appendChild(option);
+                    });
+                }
+                
+                // Load supported countries
+                const countryResponse = await fetch(`${API_BASE}/supported-countries`);
+                const countryData = await countryResponse.json();
+                
+                if (countryData.success) {
+                    const select = document.getElementById('userCountry');
+                    const currentOptions = Array.from(select.options).map(opt => opt.value);
+                    
+                    // Keep existing options and add any new ones
+                    countryData.countries.forEach(country => {
+                        if (!currentOptions.includes(country)) {
+                            const option = document.createElement('option');
+                            option.value = country;
+                            option.textContent = country;
+                            select.appendChild(option);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.log('Could not load additional options:', error);
+            }
+        });
+        
+        // AI Agent Functions
+        let currentBusinessData = null;
+        let currentCalendar = null;
+        
+        async function analyzeBusiness() {
+            const businessUrl = document.getElementById('businessUrl').value;
+            const industry = document.getElementById('businessIndustry').value;
+            const tone = document.getElementById('contentTone').value;
+            const resultDiv = document.getElementById('businessResult');
+            const btn = document.getElementById('analyzeBtn');
+            
+            if (!businessUrl.trim()) {
+                showResult(resultDiv, 'Please enter a website URL.', true);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Analyzing Business...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/analyze-business`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        website_url: businessUrl,
+                        industry: industry,
+                        tone: tone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentBusinessData = data;
+                    showBusinessAnalysis(resultDiv, data);
+                    document.getElementById('contentPlannerSection').style.display = 'block';
+                    document.getElementById('postPreviewSection').style.display = 'block';
+                } else {
+                    showResult(resultDiv, data.error || 'Business analysis failed', true);
+                }
+            } catch (error) {
+                showResult(resultDiv, `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="status-indicator status-success"></span>Analyze Business & Generate Content';
+            }
+        }
+        
+        async function createContentCalendar() {
+            const businessUrl = document.getElementById('businessUrl').value;
+            const frequency = document.getElementById('postFrequency').value;
+            const tone = document.getElementById('contentTone').value;
+            const industry = document.getElementById('businessIndustry').value;
+            const resultDiv = document.getElementById('calendarResult');
+            const btn = document.getElementById('plannerBtn');
+            
+            const eduMix = parseInt(document.getElementById('eduMix').value) || 40;
+            const promoMix = parseInt(document.getElementById('promoMix').value) || 30;
+            const newsMix = parseInt(document.getElementById('newsMix').value) || 30;
+            
+            if (eduMix + promoMix + newsMix !== 100) {
+                showResult(resultDiv, 'Content mix percentages must add up to 100%', true);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Creating Calendar...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/content-planner`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        website_url: businessUrl,
+                        frequency: frequency,
+                        tone: tone,
+                        industry: industry,
+                        post_mix: {
+                            educational: eduMix,
+                            promotional: promoMix,
+                            newsy: newsMix
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentCalendar = data.content_calendar;
+                    showContentCalendar(resultDiv, data);
+                } else {
+                    showResult(resultDiv, data.error || 'Content calendar creation failed', true);
+                }
+            } catch (error) {
+                showResult(resultDiv, `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="status-indicator status-success"></span>Create Content Calendar';
+            }
+        }
+        
+        async function previewPost() {
+            const postId = document.getElementById('previewPostId').value;
+            const resultDiv = document.getElementById('previewResult');
+            const btn = document.getElementById('previewBtn');
+            
+            if (!postId.trim()) {
+                showResult(resultDiv, 'Please enter a post ID.', true);
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Loading Preview...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/preview-post/${postId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showPostPreview(resultDiv, data.post);
+                    populateEditForm(data.post);
+                    document.getElementById('editForm').style.display = 'block';
+                } else {
+                    showResult(resultDiv, data.error || 'Post preview failed', true);
+                }
+            } catch (error) {
+                showResult(resultDiv, `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="status-indicator status-success"></span>Preview Post';
+            }
+        }
+        
+        async function savePostEdit() {
+            const postId = document.getElementById('previewPostId').value;
+            const content = document.getElementById('editContent').value;
+            const date = document.getElementById('editDate').value;
+            const time = document.getElementById('editTime').value;
+            const btn = document.getElementById('saveEditBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Saving...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/edit-post/${postId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        date: date,
+                        time: time
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Post updated successfully!');
+                } else {
+                    alert('Failed to update post: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Save Changes';
+            }
+        }
+        
+        async function publishPost() {
+            const content = document.getElementById('editContent').value;
+            const btn = document.getElementById('publishBtn');
+            
+            if (!content.trim()) {
+                alert('Please enter post content.');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loading"></div>Publishing...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/publish-post`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        scheduled_time: new Date().toISOString()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showPublishResult(data.post_result);
+                } else {
+                    alert('Failed to publish post: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Publish Now';
+            }
+        }
+        
+        // Helper functions for displaying results
+        function showBusinessAnalysis(container, data) {
+            const analysis = data.business_analysis;
+            const content = data.content_ideas;
+            
+            let html = `
+                <div class="result">
+                    <h3><span class="status-indicator status-success"></span>Business Analysis Complete!</h3>
+                    
+                    <div style="margin: 20px 0;">
+                        <h4>🏢 Business Overview</h4>
+                        <p><strong>Industry:</strong> ${analysis.industry}</p>
+                        <p><strong>Business Type:</strong> ${analysis.business_type}</p>
+                        <p><strong>Target Audience:</strong> ${analysis.target_audience}</p>
+                        <p><strong>Key Services:</strong> ${analysis.key_services.join(', ')}</p>
+                        <p><strong>Confidence Score:</strong> ${(analysis.analysis_confidence * 100).toFixed(0)}%</p>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <h4>💡 Generated Content Ideas</h4>
+                        
+                        <div style="margin: 15px 0;">
+                            <h5>Business Tips:</h5>
+                            <ul>
+                                ${content.business_tips.map(tip => `<li style="margin: 5px 0;">${tip}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div style="margin: 15px 0;">
+                            <h5>Promotional Offers:</h5>
+                            <ul>
+                                ${content.promotional_offers.map(offer => `<li style="margin: 5px 0;">${offer}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div style="margin: 15px 0;">
+                            <h5>Industry Insights:</h5>
+                            <ul>
+                                ${content.industry_insights.map(insight => `<li style="margin: 5px 0;">${insight}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function showContentCalendar(container, data) {
+            const calendar = data.content_calendar;
+            const summary = data.calendar_summary;
+            
+            let html = `
+                <div class="result">
+                    <h3><span class="status-indicator status-success"></span>Content Calendar Created!</h3>
+                    
+                    <div style="margin: 20px 0;">
+                        <h4>📊 Calendar Summary</h4>
+                        <p><strong>Total Posts:</strong> ${summary.total_posts}</p>
+                        <p><strong>Frequency:</strong> ${summary.frequency}</p>
+                        <p><strong>Date Range:</strong> ${summary.date_range.start} to ${summary.date_range.end}</p>
+                        <p><strong>Content Mix:</strong> Educational ${summary.post_mix.educational}%, Promotional ${summary.post_mix.promotional}%, News ${summary.post_mix.newsy}%</p>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <h4>📅 Upcoming Posts</h4>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            ${calendar.slice(0, 10).map(post => `
+                                <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <strong>${post.day}, ${post.date} at ${post.time}</strong>
+                                        <span style="background: #3498db; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${post.category}</span>
+                                    </div>
+                                    <p style="margin: 10px 0;">${post.content}</p>
+                                    <div style="font-size: 12px; color: #666;">
+                                        <span>ID: ${post.id}</span> | 
+                                        <span>Predicted: ${post.engagement_prediction.likes} likes, ${post.engagement_prediction.comments} comments</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${calendar.length > 10 ? `<p style="text-align: center; color: #666;">... and ${calendar.length - 10} more posts</p>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function showPostPreview(container, post) {
+            let html = `
+                <div class="result">
+                    <h3><span class="status-indicator status-success"></span>Post Preview</h3>
+                    
+                    <div style="border: 2px solid #3498db; padding: 20px; margin: 15px 0; border-radius: 10px; background: #f8f9ff;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <strong>${post.day}, ${post.date} at ${post.time}</strong>
+                            <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 4px;">${post.category}</span>
+                        </div>
+                        
+                        <div style="font-size: 16px; line-height: 1.5; margin: 15px 0;">
+                            ${post.content}
+                        </div>
+                        
+                        <div style="border-top: 1px solid #ddd; padding-top: 15px; margin-top: 15px;">
+                            <div style="display: flex; gap: 20px; font-size: 14px; color: #666;">
+                                <span>👍 ${post.engagement_prediction.likes} likes</span>
+                                <span>💬 ${post.engagement_prediction.comments} comments</span>
+                                <span>🔄 ${post.engagement_prediction.shares} shares</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function populateEditForm(post) {
+            document.getElementById('editContent').value = post.content;
+            document.getElementById('editDate').value = post.date;
+            document.getElementById('editTime').value = post.time;
+        }
+        
+        function showPublishResult(result) {
+            alert(`🎉 Post Published Successfully!\n\nPost ID: ${result.post_id}\nReach: ${result.reach} people\nEngagement: ${result.engagement.likes} likes, ${result.engagement.comments} comments\n\nView at: ${result.url}`);
+        }
+    </script>
+</body>
+</html>

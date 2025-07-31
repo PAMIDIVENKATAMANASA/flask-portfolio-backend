@@ -1,0 +1,472 @@
+{
+    "info": {
+      "name": "Flask Portfolio Backend API",
+      "description": "Complete API collection for testing Flask Portfolio Backend with Resume Parser, Translation, and Currency Conversion features",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:5000",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "Resume Parser",
+        "item": [
+          {
+            "name": "Parse Resume (PDF/DOC)",
+            "request": {
+              "method": "POST",
+              "header": [],
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  {
+                    "key": "resume",
+                    "type": "file",
+                    "src": [],
+                    "description": "Upload a PDF, DOC, or DOCX resume file"
+                  }
+                ]
+              },
+              "url": {
+                "raw": "{{base_url}}/api/parse-resume",
+                "host": ["{{base_url}}"],
+                "path": ["api", "parse-resume"]
+              },
+              "description": "Upload a resume file (PDF/DOC/DOCX) and extract structured portfolio data including name, email, phone, skills, experience, and education."
+            },
+            "response": [
+              {
+                "name": "Successful Resume Parse",
+                "originalRequest": {
+                  "method": "POST",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                      {
+                        "key": "resume",
+                        "type": "file",
+                        "src": "sample_resume.pdf"
+                      }
+                    ]
+                  },
+                  "url": {
+                    "raw": "{{base_url}}/api/parse-resume",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "parse-resume"]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "cookie": [],
+                "body": "{\n  \"success\": true,\n  \"data\": {\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@email.com\",\n    \"phone\": \"123-456-7890\",\n    \"skills\": [\"Python\", \"JavaScript\", \"React\", \"Flask\"],\n    \"experience\": [\n      {\n        \"title\": \"Software Developer at Tech Corp (2020-2023)\",\n        \"description\": \"Developed web applications using Python and JavaScript\"\n      }\n    ],\n    \"education\": [\"Bachelor of Computer Science - University XYZ (2016-2020)\"],\n    \"bio\": \"Experienced software developer with expertise in...\",\n    \"raw_text\": \"John Doe\\nSoftware Developer\\n...\"\n  },\n  \"message\": \"Resume parsed successfully\"\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Translation",
+        "item": [
+          {
+            "name": "Translate Content",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"content\": \"Welcome to our amazing website! We offer the best products and services.\",\n  \"target_language\": \"es\",\n  \"source_language\": \"auto\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/translate",
+                "host": ["{{base_url}}"],
+                "path": ["api", "translate"]
+              },
+              "description": "Translate website content to any supported language. Supports 19+ languages including Spanish, French, German, Hindi, Chinese, etc."
+            },
+            "response": [
+              {
+                "name": "Successful Translation",
+                "originalRequest": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"content\": \"Welcome to our amazing website!\",\n  \"target_language\": \"es\"\n}"
+                  },
+                  "url": {
+                    "raw": "{{base_url}}/api/translate",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "translate"]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "cookie": [],
+                "body": "{\n  \"success\": true,\n  \"original_content\": \"Welcome to our amazing website!\",\n  \"translated_content\": \"¡Bienvenido a nuestro increíble sitio web!\",\n  \"source_language\": \"auto\",\n  \"target_language\": \"es\"\n}"
+              }
+            ]
+          },
+          {
+            "name": "Get Supported Languages",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/supported-languages",
+                "host": ["{{base_url}}"],
+                "path": ["api", "supported-languages"]
+              },
+              "description": "Get list of all supported languages for translation"
+            },
+            "response": [
+              {
+                "name": "Supported Languages",
+                "originalRequest": {
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                    "raw": "{{base_url}}/api/supported-languages",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "supported-languages"]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "cookie": [],
+                "body": "{\n  \"success\": true,\n  \"languages\": {\n    \"en\": \"English\",\n    \"es\": \"Spanish\",\n    \"fr\": \"French\",\n    \"de\": \"German\",\n    \"hi\": \"Hindi\",\n    \"zh\": \"Chinese (Simplified)\"\n  }\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Currency Conversion",
+        "item": [
+          {
+            "name": "Convert Currency",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/convert-currency?price=99.99&country=IN&base_currency=USD",
+                "host": ["{{base_url}}"],
+                "path": ["api", "convert-currency"],
+                "query": [
+                  {
+                    "key": "price",
+                    "value": "99.99",
+                    "description": "Product price in base currency"
+                  },
+                  {
+                    "key": "country",
+                    "value": "IN",
+                    "description": "User's country code (US, IN, GB, DE, etc.)"
+                  },
+                  {
+                    "key": "base_currency",
+                    "value": "USD",
+                    "description": "Base currency code (USD, EUR, GBP, etc.)"
+                  }
+                ]
+              },
+              "description": "Convert product price to local currency based on user's country. Supports 25+ countries with real-time exchange rates."
+            },
+            "response": [
+              {
+                "name": "Successful Currency Conversion",
+                "originalRequest": {
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                    "raw": "{{base_url}}/api/convert-currency?price=99.99&country=IN&base_currency=USD",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "convert-currency"],
+                    "query": [
+                      {
+                        "key": "price",
+                        "value": "99.99"
+                      },
+                      {
+                        "key": "country",
+                        "value": "IN"
+                      },
+                      {
+                        "key": "base_currency",
+                        "value": "USD"
+                      }
+                    ]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "cookie": [],
+                "body": "{\n  \"success\": true,\n  \"original_price\": 99.99,\n  \"base_currency\": \"USD\",\n  \"country\": \"IN\",\n  \"local_currency\": \"INR\",\n  \"converted_price\": 7449.26,\n  \"exchange_rate\": 74.5\n}"
+              }
+            ]
+          },
+          {
+            "name": "Get Supported Countries",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/supported-countries",
+                "host": ["{{base_url}}"],
+                "path": ["api", "supported-countries"]
+              },
+              "description": "Get list of all supported countries for currency conversion"
+            },
+            "response": [
+              {
+                "name": "Supported Countries",
+                "originalRequest": {
+                  "method": "GET",
+                  "header": [],
+                  "url": {
+                    "raw": "{{base_url}}/api/supported-countries",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "supported-countries"]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "cookie": [],
+                "body": "{\n  \"success\": true,\n  \"countries\": [\"US\", \"GB\", \"DE\", \"FR\", \"JP\", \"CN\", \"IN\", \"CA\", \"AU\", \"BR\"]\n}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AI Agent - Facebook Growth",
+        "item": [
+          {
+            "name": "Analyze Business",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"website_url\": \"https://example.com\",\n  \"industry\": \"restaurant\",\n  \"tone\": \"friendly\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/analyze-business",
+                "host": ["{{base_url}}"],
+                "path": ["api", "analyze-business"]
+              },
+              "description": "Analyze business from website URL and generate AI-powered content ideas including business tips, promotional offers, and industry insights."
+            },
+            "response": [
+              {
+                "name": "Successful Business Analysis",
+                "originalRequest": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"website_url\": \"https://restaurant.com\",\n  \"industry\": \"restaurant\",\n  \"tone\": \"friendly\"\n}"
+                  },
+                  "url": {
+                    "raw": "{{base_url}}/api/analyze-business",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "analyze-business"]
+                  }
+                },
+                "status": "OK",
+                "code": 200,
+                "_postman_previewlanguage": "json",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "cookie": [],
+                "body": "{\n  \"success\": true,\n  \"business_analysis\": {\n    \"industry\": \"restaurant\",\n    \"business_type\": \"B2C\",\n    \"target_audience\": \"Food lovers, families, professionals\",\n    \"key_services\": [\"dining\", \"takeout\", \"catering\"],\n    \"analysis_confidence\": 0.85\n  },\n  \"content_ideas\": {\n    \"business_tips\": [\"Use high-quality photos of your dishes...\"],\n    \"promotional_offers\": [\"Get 20% off your next meal...\"],\n    \"industry_insights\": [\"Food delivery apps now account for 60%...\"]\n  }\n}"
+              }
+            ]
+          },
+          {
+            "name": "Create Content Planner",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"website_url\": \"https://example.com\",\n  \"frequency\": \"2x/week\",\n  \"tone\": \"friendly\",\n  \"post_mix\": {\n    \"educational\": 40,\n    \"promotional\": 30,\n    \"newsy\": 30\n  },\n  \"industry\": \"restaurant\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/content-planner",
+                "host": ["{{base_url}}"],
+                "path": ["api", "content-planner"]
+              },
+              "description": "Create a content calendar with scheduled posts based on frequency and content mix preferences."
+            }
+          },
+          {
+            "name": "Preview Post",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/preview-post/post_20240215_1",
+                "host": ["{{base_url}}"],
+                "path": ["api", "preview-post", "post_20240215_1"]
+              },
+              "description": "Preview a specific post from the content calendar before publishing."
+            }
+          },
+          {
+            "name": "Edit Post",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"content\": \"Updated post content with new messaging\",\n  \"date\": \"2024-02-16\",\n  \"time\": \"14:00\",\n  \"tone\": \"professional\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/edit-post/post_20240215_1",
+                "host": ["{{base_url}}"],
+                "path": ["api", "edit-post", "post_20240215_1"]
+              },
+              "description": "Edit a post's content, scheduling, and tone before publishing."
+            }
+          },
+          {
+            "name": "Publish Post to Facebook",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"content\": \"🎉 Special Offer Alert! Get 20% off your next meal when you bring a friend! Don't miss out - limited time only! #Sale #SpecialOffer\",\n  \"scheduled_time\": \"2024-02-15T10:00:00Z\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/publish-post",
+                "host": ["{{base_url}}"],
+                "path": ["api", "publish-post"]
+              },
+              "description": "Simulate publishing a post to Facebook (mock implementation for demo)."
+            }
+          },
+          {
+            "name": "Bulk Schedule Posts",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"posts\": [\n    {\n      \"id\": \"post_20240215_1\",\n      \"content\": \"Business tip post content\",\n      \"date\": \"2024-02-15\",\n      \"time\": \"10:00\"\n    },\n    {\n      \"id\": \"post_20240217_1\",\n      \"content\": \"Promotional offer content\",\n      \"date\": \"2024-02-17\",\n      \"time\": \"12:00\"\n    }\n  ]\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/bulk-schedule",
+                "host": ["{{base_url}}"],
+                "path": ["api", "bulk-schedule"]
+              },
+              "description": "Schedule multiple posts for publishing at once."
+            }
+          }
+        ]
+      },
+      {
+        "name": "Frontend",
+        "item": [
+          {
+            "name": "Get Frontend Testing Page",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/",
+                "host": ["{{base_url}}"],
+                "path": [""]
+              },
+              "description": "Access the complete HTML + JavaScript frontend for testing all APIs"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
