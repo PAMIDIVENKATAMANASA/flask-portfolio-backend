@@ -25,22 +25,6 @@ A complete, dynamic, and modular Python Flask backend project with the following
    - Translation form with language selection
    - Currency conversion with country selection
 
-## Project Structure
-
-\`\`\`
-flask-portfolio-backend/
-├── app.py                      # Main Flask application
-├── requirements.txt            # Python dependencies
-├── modules/                    # Modular backend components
-│   ├── __init__.py
-│   ├── resume_parser.py        # Resume parsing logic
-│   ├── translator.py           # Translation functionality
-│   └── currency_converter.py   # Currency conversion logic
-├── frontend/
-│   └── index.html             # Testing frontend
-├── uploads/                   # Temporary file uploads (auto-created)
-└── README.md                  # This file
-\`\`\`
 
 ## Setup Instructions
 
